@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eye Direction Detection</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        #videoContainer {
+            display: none;
+            width: 640px;
+            height: 480px;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+        #videoFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .directions {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #333;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="videoContainer">
+        <img id="videoFeed" src="" alt="Video feed">
+    </div>
+    <button id="startStopButton">Start Video</button>
+    <div class="directions">
+        <p>Left Eye Direction: <span id="leftEyeDirection">N/A</span></p>
+        <p>Right Eye Direction: <span id="rightEyeDirection">N/A</span></p>
+    </div>
+    <script>
+        let videoRunning = false;
+        const videoContainer = document.getElementById('videoContainer');
+        const videoFeed = document.getElementById('videoFeed');
+        const startStopButton = document.getElementById('startStopButton');
+        const leftEyeDirectionSpan = document.getElementById('leftEyeDirection');
+        const rightEyeDirectionSpan = document.getElementById('rightEyeDirection');
+
+        startStopButton.addEventListener('click', () => {
+            if (videoRunning) {
+                stopVideo();
+            } else {
+                startVideo();
+            }
+        });
+
+        function startVideo() {
+            videoFeed.src = '/video_feed';
+            videoContainer.style.display = 'flex'; // Show video in flexbox
+            startStopButton.textContent = 'Stop Video';
+            videoRunning = true;
+            fetchDirections(); // Start fetching directions
+        }
+
+        function stopVideo() {
+            videoFeed.src = '';
+            videoContainer.style.display = 'none';
+            startStopButton.textContent = 'Start Video';
+            videoRunning = false;
+        }
+
+        function fetchDirections() {
+            if (videoRunning) {
+                fetch('/get_directions')
+                    .then(response => response.json())
+                    .then(data => {
+                        leftEyeDirectionSpan.textContent = data.left_eye;
+                        rightEyeDirectionSpan.textContent = data.right_eye;
+                    })
+                    .catch(error => console.error('Error fetching directions:', error));
+
+                setTimeout(fetchDirections, 1000); // Fetch directions every second
+            }
+        }
+    </script>
+</body>
+</html>

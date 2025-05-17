@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Head Tracking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f0f0f0;
+        }
+        #video {
+            border: 1px solid black;
+            width: 640px;
+            height: 480px;
+            margin-top: 20px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Head Tracking System</h1>
+    <div class="buttons">
+        <button onclick="startVideo()">Start Video</button>
+        <button onclick="stopVideo()">Stop Video</button>
+    </div>
+    <img id="video" src="" alt="Video feed will appear here">
+
+    <script>
+        function startVideo() {
+            fetch('/start_video', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('video').src = "/video_feed";
+                    }
+                });
+        }
+
+        function stopVideo() {
+            fetch('/stop_video', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('video').src = "";
+                    }
+                });
+        }
+    </script>
+</body>
+</html>
